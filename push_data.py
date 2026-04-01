@@ -32,7 +32,7 @@ class NetworkDataExtract():
             data = pd.read_csv(file_path)
             data.reset_index(drop= True, inplace= True)
             # records = list(json.loads(data.T.to_json()).values())   # This line is outdated
-            records = data.to_dict(orient= 'records')                   # Replacing with this line
+            records = data.to_dict(orient= 'records')                 # Replacing with this line
             return records
 
         except Exception as e:
