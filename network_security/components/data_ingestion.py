@@ -3,7 +3,7 @@ from network_security.logging_modules.logger import logging
 
 # Configuration of the Data Ingestion Config
 from network_security.entity.config_entity import DataIngestionConfig
-
+from network_security.entity.artifact_entity import DataIngestionArtifact
 import os
 import sys
 import pymongo
@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 load_dotenv()
 
-MONGO_DB_URL = os.get_env('MONGO_DB_URL')
+MONGO_DB_URL = os.getenv('MONGO_DB_URL')
 
 
 # starting reading form this URL
@@ -40,7 +40,7 @@ class DataIngestion:
             df = pd.DataFrame(list(collection.find()))
             # while retriving data form mongoDB, an column '-id' usually gets added. so removal is important
             if '_id' in df.columns.to_list():
-                df.drop(columns='_id', axis = 1)
+                df = df.drop(columns='_id')
 
             df.replace({'na':np.nan}, inplace= True)
             return df
@@ -64,6 +64,10 @@ class DataIngestion:
 
     def split_data_as_train_test(self, dataframe: pd.DataFrame):
         try:
+            
+            training_file_path = self.data_ingestion_config.training_file_path
+            testing_file_path = self.data_ingestion_config.testing_file_path
+
             train_set, test_set = train_test_split(
                 dataframe, test_size= self.data_ingestion_config.train_test_split_ratio
             )
@@ -71,13 +75,13 @@ class DataIngestion:
 
             logging.info('Exited split_data_as_train_test method of DataIngestion class')
 
-            os.makedirs('dir_path', exist_ok= True)
-            logging.info(f'Exporting train and test file path')
+            os.makedirs(os.path.dirname(training_file_path), exist_ok=True)
+            os.makedirs(os.path.dirname(testing_file_path), exist_ok=True)
 
-            train_set.to_csv(self.data_ingestion_config.training_file_path, index = False, header = True)
+            train_set.to_csv(training_file_path, index=False, header=True)
             logging.info('train set loading completed')
 
-            test_set.to_csv(self.data_ingestion_config.testing_file_path, index = False, header = True)
+            test_set.to_csv(testing_file_path, index=False, header=True)
             logging.info('test set loading completed')
 
         except Exception as e:
@@ -89,6 +93,11 @@ class DataIngestion:
             dataframe = self.export_collection_as_dataframe()
             dataframe = self.export_data_to_feature_store(dataframe)
             self.split_data_as_train_test(dataframe)
+
+            dataingestionartifact = DataIngestionArtifact(train_file_path = self.data_ingestion_config.training_file_path, test_file_path = self.data_ingestion_config.testing_file_path)
+            return dataingestionartifact
+
+
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
