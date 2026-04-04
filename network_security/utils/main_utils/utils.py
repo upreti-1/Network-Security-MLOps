@@ -30,7 +30,7 @@ def write_yaml(file_path: str, content: object, replace: bool = False) -> None:
 def save_numpy_array(file_path: str, array: np.array):
     try:
         dir_path = os.path.dirname(file_path)
-        os.makedirs(file_path, exist_ok= True)
+        os.makedirs(dir_path, exist_ok= True)
         with open (file_path, 'wb') as file:
             np.save(file, array)
     

@@ -5,10 +5,12 @@ from network_security.entity.config_entity import TrainingPipelineConfig
 import sys
 from network_security.exception.exception import NetworkSecurityException
 from network_security.logging_modules.logger import logging
+from network_security.components.data_transformation import DataTransformation, DataTransformationConfig
 
 if __name__ == '__main__':
     try:
         trainingPipelineCofig = TrainingPipelineConfig()
+
         dataIngestionConfig = DataIngestionConfig(trainingPipelineCofig)
         dataingestion = DataIngestion(dataIngestionConfig)
         logging.info("Initiating Data Ingestion")
@@ -22,6 +24,13 @@ if __name__ == '__main__':
         data_Validation_Artifact = data_Validation.initiate_data_validation()
         logging.info('Data Validation Completed')
         print (data_Validation_Artifact)
+
+        dataTransformationConfig = DataTransformationConfig(trainingPipelineCofig)
+        dataTransformation = DataTransformation(data_validation_artifact= data_Validation_Artifact, data_transformation_config= dataTransformationConfig)
+        logging.info('Initiating Data Transformation')
+        dataTransformationArtifact = dataTransformation.initiate_data_transformation()
+        logging.info("Data Transformation Completed")
+        print (dataTransformationArtifact)
 
 
     except Exception as e:
