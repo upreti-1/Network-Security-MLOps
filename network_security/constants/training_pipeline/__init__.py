@@ -42,3 +42,11 @@ Data Transformation related constants
 DATA_TRANSFORMATION_DIR_NAME: str = 'Data_Transformation'
 DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = 'transformed'
 DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = 'transformed_object'
+PREPROCESSING_OBJECT_FILE_NAME: str = 'preprocessor_object'
+
+# KNN imputer class to replace nan values
+DATA_TRANSFORMATION_IMPUTER_PARAMS: dict = {
+    'missing_values': np.nan,
+    'n_neighbors': 3,
+    'weights': 'uniform'
+}
