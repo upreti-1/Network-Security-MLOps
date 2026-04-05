@@ -6,6 +6,7 @@ import sys
 from network_security.exception.exception import NetworkSecurityException
 from network_security.logging_modules.logger import logging
 from network_security.components.data_transformation import DataTransformation, DataTransformationConfig
+from network_security.components.model_trainer import ModelTainerConfig, ModelTrainer
 
 if __name__ == '__main__':
     try:
@@ -31,6 +32,12 @@ if __name__ == '__main__':
         dataTransformationArtifact = dataTransformation.initiate_data_transformation()
         logging.info("Data Transformation Completed")
         print (dataTransformationArtifact)
+
+        logging.info("Model Training Started")
+        model_trainer_config = ModelTainerConfig(trainingPipelineCofig)
+        model_trainer = ModelTrainer(modelTrainerConfig= model_trainer_config, dataTransformationArtifact= dataTransformationArtifact)
+        model_trainer_artifact = model_trainer.initiate_model_trainer()
+        logging.info("Model Training Artifact Created")
 
 
     except Exception as e:
