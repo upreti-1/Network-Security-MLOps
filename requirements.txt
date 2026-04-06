@@ -9,6 +9,6 @@ dotenv
 scikit_learn
 pyaml
 dill
-
+mlflow
 
 #-e .

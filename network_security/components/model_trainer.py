@@ -1,5 +1,7 @@
 import os
 import sys
+import mlflow
+
 
 from network_security.exception.exception import NetworkSecurityException
 from network_security.logging_modules.logger import logging
@@ -27,6 +29,21 @@ class ModelTrainer:
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
+        
+    def track_mlflow(self, best_model, classification_metric):
+        with mlflow.start_run():
+            f1_score = classification_metric.f1_score
+            precision_score = classification_metric.precision_score
+            recall_score = classification_metric.recall_score
+
+            mlflow.log_metric('f1_score', f1_score)
+            mlflow.log_metric('precision_score', precision_score)
+            mlflow.log_metric('recall_score', recall_score)
+
+            mlflow.sklearn.log_model(best_model, 'model')
+
+
+
         
     def train_model(self, x_train, y_train, x_test, y_test):
         models = {
@@ -69,7 +86,8 @@ class ModelTrainer:
         
         classification_train_metric = get_classification_score (y_true= y_train, y_pred= y_train_pred)
 
-        # we will be tracking using MLFlow later here
+        # we will be tracking experiments using MLFlow
+        self.track_mlflow(best_model, classification_train_metric)
 
 
 
