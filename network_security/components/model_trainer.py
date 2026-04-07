@@ -1,6 +1,13 @@
 import os
 import sys
 import mlflow
+import dagshub
+dagshub.init(repo_owner='upreti-1', repo_name='Network-Security-MLOps', mlflow=True)
+
+import mlflow
+with mlflow.start_run():
+  mlflow.log_param('parameter name', 'value')
+  mlflow.log_metric('metric name', 1)
 
 
 from network_security.exception.exception import NetworkSecurityException
