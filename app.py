@@ -21,6 +21,7 @@ if mongo_db_url is None:
 from network_security.exception.exception import NetworkSecurityException
 from network_security.pipeline.training_pipeline import TrainingPipeline
 from network_security.utils.main_utils.utils import load_object
+from network_security.utils.ml_utils.model.estimator import NetworkModel
 
 client = pymongo.MongoClient(mongo_db_url, tlsCAFile = ca)
 
@@ -40,6 +41,9 @@ app.add_middleware(
     allow_headers = ['*']
 )
 
+from fastapi.templating import Jinja2Templates
+templates = Jinja2Templates(directory= "./templates")
+
 @app.get('/', tags = ['authentication'])
 async def index():
     return RedirectResponse(url = '/docs')
@@ -50,6 +54,28 @@ async def train_route():
         train_pipeline = TrainingPipeline()
         train_pipeline.run_pipeline()
         return Response(f"Training is Successful")
+
+    except Exception as e:
+        raise NetworkSecurityException (e, sys)
+    
+@app.post('/predict')
+async def predict_route(request:Request, file:UploadFile= File(...)):
+    try:
+        df = pd.read_csv(file.file)
+        preprocessor = load_object('final_model/preprocessor.pkl')
+        final_model = load_object('final_model/model.pkl')
+        network_model = NetworkModel(preprocessor= preprocessor, model = final_model)
+        print(df.iloc[0])
+        y_pred = network_model.predict(df)
+        print(y_pred)
+        df['predicted_column'] = y_pred
+        print(df['predicted_column'])
+
+        df.to_csv('prediction_output/output.csv')
+
+        table_html = df.to_html(classes = 'table table-striped')
+
+        return templates.TemplateResponse(request=request, name="table.html", context={"request": request, "table": table_html})
 
     except Exception as e:
         raise NetworkSecurityException (e, sys)
