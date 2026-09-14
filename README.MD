@@ -128,6 +128,7 @@ docker run -d -p 8000:8000 --env-file .env network-security
 | `ECR_REPOSITORY_NAME` | Target ECR repo |
 | `MONGO_DB_URL` | Passed into the running container |
 | `TRAINING_BUCKET_NAME` | S3 bucket for artifact sync |
+| `DAGSHUB_USER_TOKEN` | DagsHub auth for `dagshub.init()`/MLflow tracking (required at container startup, not just for `/train`) |
 
 The workflow in `.github/workflows/main.yaml` runs on every push to `main`:
 integration checks → build and push the image to ECR → pull and restart the

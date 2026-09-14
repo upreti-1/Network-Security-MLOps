@@ -103,6 +103,7 @@ jobs:
             -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -e AWS_REGION="${{ secrets.AWS_REGION }}" \
             -e TRAINING_BUCKET_NAME="${{ secrets.TRAINING_BUCKET_NAME }}" \
+            -e DAGSHUB_USER_TOKEN="${{ secrets.DAGSHUB_USER_TOKEN }}" \
             $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Clean up
